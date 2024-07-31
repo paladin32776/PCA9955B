@@ -10,10 +10,10 @@ PCA9955B::PCA9955B(unsigned char address)
   // else if (display_type==SMALL)
   //   Seg2LED = Seg2LED_small;
   mode(SOLID);
-  write_byte(PCA_PWMALL, 0xFF);
-  write_byte(PCA_IREFALL, 0x16); // Imax = 10mA @ Rext = 1k
-  write_byte(PCA_MODE1,0b00000001);
-  write_byte(PCA_MODE2,0b00000101);
+  write_byte(PCA9955B_PWMALL, 0xFF);
+  write_byte(PCA9955B_IREFALL, 0x16); // Imax = 10mA @ Rext = 1k
+  write_byte(PCA9955B_MODE1,0b00000001);
+  write_byte(PCA9955B_MODE2,0b00000101);
 }
 
 void PCA9955B::mode(unsigned char nmode)
@@ -32,7 +32,7 @@ void PCA9955B::write_byte(unsigned char regbyte, unsigned char databyte)
 void PCA9955B::write_LS()
 {
   Wire.beginTransmission(addr); // transmit to device #addr
-  Wire.write(byte(PCA_LEDOUT0 | PCA_AI_ALL)); // sends instruction byte including auto increment set
+  Wire.write(byte(PCA9955B_LEDOUT0 | PCA9955B_AI_ALL)); // sends instruction byte including auto increment set
   Wire.write(byte(LS.LSbyte[0])); // sends value bytes
   Wire.write(byte(LS.LSbyte[1]));
   Wire.write(byte(LS.LSbyte[2]));
@@ -43,7 +43,7 @@ void PCA9955B::write_LS()
 void PCA9955B::write_PWMALL(unsigned char value)
 {
   Wire.beginTransmission(addr); // transmit to device #addr
-  Wire.write(byte(PCA_PWMALL)); // sends instruction byte including auto increment set
+  Wire.write(byte(PCA9955B_PWMALL)); // sends instruction byte including auto increment set
   Wire.write(byte(value)); // sends value bytes
   Wire.endTransmission();     // stop transmitting
 }
@@ -51,7 +51,7 @@ void PCA9955B::write_PWMALL(unsigned char value)
 void PCA9955B::write_IREFALL(unsigned char value)
 {
   Wire.beginTransmission(addr); // transmit to device #addr
-  Wire.write(byte(PCA_IREFALL)); // sends instruction byte including auto increment set
+  Wire.write(byte(PCA9955B_IREFALL)); // sends instruction byte including auto increment set
   Wire.write(byte(value)); // sends value bytes
   Wire.endTransmission();     // stop transmitting
 }
@@ -104,30 +104,30 @@ void PCA9955B::clear()
 void PCA9955B::dutycycle(unsigned char ontime)
 {
   if (offon[1]==PWM0)
-    write_byte(PCA_PWMALL, ontime);
+    write_byte(PCA9955B_PWMALL, ontime);
   else if (offon[1]==PWM1)
-    write_byte(PCA_GRPPWM, ontime);
+    write_byte(PCA9955B_GRPPWM, ontime);
 }
 
 void PCA9955B::dutycycle(unsigned char nled, unsigned char ontime)
 {
-  write_byte(PCA_PWMX_OFFSET + nled, ontime);
+  write_byte(PCA9955B_PWMX_OFFSET + nled, ontime);
 }
 
 void PCA9955B::period(unsigned char prescaler)
 {
-    write_byte(PCA_GRPFREQ, prescaler);
+    write_byte(PCA9955B_GRPFREQ, prescaler);
 }
 
 void PCA9955B::set_allcall(unsigned char allcalladr)
 {
-  write_byte(PCA_ALLCALLADR, allcalladr);
-  write_byte(PCA_MODE1, read_byte(PCA_MODE1) | 0x01);
+  write_byte(PCA9955B_ALLCALLADR, allcalladr);
+  write_byte(PCA9955B_MODE1, read_byte(PCA9955B_MODE1) | 0x01);
 }
 
 void PCA9955B::clear_allcall()
 {
-  write_byte(PCA_MODE1, read_byte(PCA_MODE1) & 0xFE);
+  write_byte(PCA9955B_MODE1, read_byte(PCA9955B_MODE1) & 0xFE);
 }
 
 unsigned char PCA9955B::get_addr()
